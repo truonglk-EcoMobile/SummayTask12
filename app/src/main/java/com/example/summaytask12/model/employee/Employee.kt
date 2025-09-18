@@ -1,23 +1,33 @@
 package com.example.summaytask12.model.employee
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import com.example.summaytask12.companion.Ultils
+import com.example.summaytask12.extension.getLastName
+import com.example.summaytask12.extension.isValidName
+import com.example.summaytask12.extension.toVND
 import com.example.summaytask12.model.enumclass.Position
 import java.time.LocalDate
 import java.time.Period
-import java.util.Random
 
 @RequiresApi(Build.VERSION_CODES.O)
-class Employee(
-    name: String?,
+open class Employee(
+    val fullName: String?,
     var position: Position,
     var joinDate: String,
-    private var salary: Double?
-) : BaseEmployee(Random().nextInt(10000), name) {
-    override fun bonus(): Double = salary?.times(0.1) ?: 0.0
+    protected var salary: Double?
+) : BaseEmployee(Ultils.generatedId(), fullName) {
+    override fun bonus(): Double{
+        val tyLeBonus = position.tyLeBonus
+        return salary?.times(tyLeBonus)?:0.0
+    }
     constructor(name: String?, position: Position) : this(name, position, LocalDate.now().toString(),6000.0)
+
+    init {
+        if(!fullName.isValidName()){
+            throw Exception("Tên không hợp lệ $fullName")
+        }
+    }
 
     fun thamNien(): String {
         val ngayHienTai = LocalDate.now()
@@ -34,7 +44,7 @@ class Employee(
     }
 
     override fun toString(): String {
-        return "Employee(name=$name ,position=${position.displayName}, joinDate='${Ultils.formatDate(joinDate)}', salary=$salary)"
+        return "Employee(id=$id name=${name.getLastName()} ,position=${position.displayName}, joinDate='${Ultils.formatDate(joinDate)}', salary=${salary.toVND()}, bonus = ${bonus().toVND()})"
     }
 
 

@@ -10,7 +10,7 @@ import com.example.summaytask12.singleton.EmployeeData
 @RequiresApi(Build.VERSION_CODES.O)
 
 class ImplEmployeeRepository : EmployeeRepository {
-    protected val employees = EmployeeData.employees
+    private val employees = EmployeeData.employees
     override fun addEmployee(employee: Employee): Result<String> {
         return if (employee.name != null && employee.name.length <= 30) {
             employees.add(employee)
@@ -20,6 +20,14 @@ class ImplEmployeeRepository : EmployeeRepository {
         }
     }
 
+    override fun deleteEmployee(employee: Employee): Result<String> {
+        if (employees.contains(employee)){
+            employees.remove(employee)
+            return Result.Success(data = "Xóa nhân viên thành công")
+        }else{
+            return Result.Error(message = "Không tìm thấy nhân viên có id là ${employee.id}")
+        }
+    }
 
     override fun updateEmployee(employee: Employee): Result<String> {
         val index = employees.indexOfFirst { it.id == employee.id }
@@ -33,7 +41,7 @@ class ImplEmployeeRepository : EmployeeRepository {
 
 
     override fun getAllEmployees(): Result<List<Employee>> {
-        return if (employees.isNullOrEmpty()){
+        return if (employees.isEmpty()){
             Result.Error(message = "Không có nhân viên nào")
         }else{
             Result.Success(data = employees)
